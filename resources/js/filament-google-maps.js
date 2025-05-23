@@ -906,11 +906,98 @@ export default function filamentGoogleMapsField({
           item.setEditable(false);
         }
       });
+      // Mostrar botón flotante para eliminar
+      this.showDeleteButton(shape);
+    },
+
+    showDeleteButton: function (shape) {
+      this.removeDeleteButton();
+      const mapDiv = this.map.getDiv();
+      const button = document.createElement('button');
+      button.textContent = 'Eliminar';
+      button.style.position = 'absolute';
+      button.style.zIndex = 1000;
+      button.style.background = '#ff4d4f';
+      button.style.color = '#fff';
+      button.style.border = 'none';
+      button.style.borderRadius = '4px';
+      button.style.padding = '6px 12px';
+      button.style.cursor = 'pointer';
+      button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+      button.id = 'fgm-delete-shape-btn';
+      // Posicionar el botón cerca del centroide de la figura
+      let position;
+      if (shape.getCenter) {
+        position = shape.getCenter();
+      } else if (shape.getPath && shape.getPath().getLength() > 0) {
+        const path = shape.getPath().getArray();
+        let lat = 0, lng = 0;
+        path.forEach(p => { lat += p.lat(); lng += p.lng(); });
+        lat /= path.length;
+        lng /= path.length;
+        position = new google.maps.LatLng(lat, lng);
+      } else if (shape.getBounds) {
+        position = shape.getBounds().getCenter();
+      } else if (shape.getPosition) {
+        position = shape.getPosition();
+      }
+      if (position) {
+        const projection = this.map.getProjection();
+        if (projection) {
+          // Si hay proyección, usarla (en la mayoría de casos no está disponible)
+          // Si no, posicionar el botón en la esquina superior derecha del mapa
+        }
+        // Obtener la posición del botón en píxeles respecto al mapa
+        const scale = Math.pow(2, this.map.getZoom());
+        const nw = new google.maps.LatLng(
+          this.map.getBounds().getNorthEast().lat(),
+          this.map.getBounds().getSouthWest().lng()
+        );
+        const worldCoordinateNW = this.map.getProjection().fromLatLngToPoint(nw);
+        const worldCoordinate = this.map.getProjection().fromLatLngToPoint(position);
+        const point = {
+          x: Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
+          y: Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
+        };
+        button.style.left = point.x + 20 + 'px';
+        button.style.top = point.y + 'px';
+      } else {
+        // fallback: esquina superior derecha
+        button.style.right = '20px';
+        button.style.top = '20px';
+      }
+      button.onclick = () => {
+        this.deleteSelectedShape();
+      };
+      mapDiv.appendChild(button);
+    },
+
+    removeDeleteButton: function () {
+      const mapDiv = this.map.getDiv();
+      const btn = document.getElementById('fgm-delete-shape-btn');
+      if (btn) mapDiv.removeChild(btn);
+    },
+
+    deleteSelectedShape: function () {
+      if (!this.selectedShape) return;
+      // Eliminar del mapa
+      this.selectedShape.setMap(null);
+      // Eliminar del array de overlays
+      this.overlays = this.overlays.filter(o => o !== this.selectedShape);
+      // Eliminar del dataLayer
+      if (this.selectedShape.feature) {
+        this.dataLayer.remove(this.selectedShape.feature);
+      }
+      // Actualizar el JSON
+      this.drawingModified();
+      // Limpiar selección y botón
+      this.clearSelection();
+      this.removeDeleteButton();
     },
 
     clearSelection: function () {
       this.selectedShape = null;
-
+      this.removeDeleteButton();
       this.overlays.forEach(function (item) {
         item.setEditable(false);
         item.setOptions({

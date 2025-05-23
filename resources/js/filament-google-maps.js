@@ -914,7 +914,7 @@ export default function filamentGoogleMapsField({
       this.removeDeleteButton();
       const mapDiv = this.map.getDiv();
       const button = document.createElement('button');
-      button.textContent = 'Eliminar';
+      button.textContent = '🗙';
       button.style.position = 'absolute';
       button.style.zIndex = 1000;
       button.style.background = '#ff4d4f';
@@ -959,8 +959,8 @@ export default function filamentGoogleMapsField({
           x: Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
           y: Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
         };
-        button.style.left = point.x + 20 + 'px';
-        button.style.top = point.y + 'px';
+        button.style.left = point.x + 30 + 'px'; 
+        button.style.top = point.y - 30 + 'px';
       } else {
         // fallback: esquina superior derecha
         button.style.right = '20px';

@@ -145,22 +145,24 @@ export default function filamentGoogleMapsField({
       // Escuchar cambios en el input con id 'data.color' para cambiar el color de la figura seleccionada
       const colorInput = document.getElementById('data.color');
       if (colorInput) {
-        colorInput.addEventListener('input', (e) => {
-          const color = e.target.value;
-          if (this.selectedShape) {
-            // Cambiar el color de la figura seleccionada
-            if (this.selectedShape.setOptions) {
-              this.selectedShape.setOptions({ fillColor: color });
-            } else if (this.selectedShape.set) {
-              this.selectedShape.set('fillColor', color);
+        ['input', 'change', 'blur'].forEach(eventName => {
+          colorInput.addEventListener(eventName, (e) => {
+            const color = e.target.value;
+            if (this.selectedShape) {
+              // Cambiar el color de la figura seleccionada
+              if (this.selectedShape.setOptions) {
+                this.selectedShape.setOptions({ fillColor: color });
+              } else if (this.selectedShape.set) {
+                this.selectedShape.set('fillColor', color);
+              }
+              // Actualizar la propiedad fillColor en el feature
+              if (this.selectedShape.feature) {
+                this.selectedShape.feature.setProperty('fillColor', color);
+              }
+              // Forzar actualización del JSON
+              this.drawingModified();
             }
-            // Actualizar la propiedad fillColor en el feature
-            if (this.selectedShape.feature) {
-              this.selectedShape.feature.setProperty('fillColor', color);
-            }
-            // Forzar actualización del JSON
-            this.drawingModified();
-          }
+          });
         });
       }
     },

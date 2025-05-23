@@ -649,6 +649,13 @@ export default function filamentGoogleMapsField({
 
     instanceFeature: function (overlay) {
       var calculatedOverlay = this.calculateGeometry(overlay);
+      // Añadir fillColor a las propiedades si existe en el overlay
+      let extraProps = {};
+      if (overlay.fillColor) {
+        extraProps.fillColor = overlay.fillColor;
+      } else if (overlay.get('fillColor')) {
+        extraProps.fillColor = overlay.get('fillColor');
+      }
       return this.dataLayer.add(
         new google.maps.Data.Feature({
           geometry: calculatedOverlay.geometry,
@@ -659,7 +666,8 @@ export default function filamentGoogleMapsField({
             },
             calculatedOverlay.hasOwnProperty("properties")
               ? calculatedOverlay.properties
-              : {}
+              : {},
+            extraProps
           ),
         })
       );

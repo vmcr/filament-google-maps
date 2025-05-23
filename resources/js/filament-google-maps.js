@@ -914,14 +914,21 @@ export default function filamentGoogleMapsField({
       this.removeDeleteButton();
       const mapDiv = this.map.getDiv();
       const button = document.createElement('button');
-      button.textContent = '🗙';
+      button.textContent = '🞪';
+      button.title = 'Eliminar figura';
+      button.style.fontSize = '1rem';
+      button.style.width = '1.5rem';
+      button.style.height = '1.5rem';
+      button.style.display = 'flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
       button.style.position = 'absolute';
       button.style.zIndex = 1000;
       button.style.background = '#ff4d4f';
       button.style.color = '#fff';
       button.style.border = 'none';
-      button.style.borderRadius = '4px';
-      button.style.padding = '6px 12px';
+      button.style.borderRadius = '.5rem';
+      button.style.padding = '.25rem';
       button.style.cursor = 'pointer';
       button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
       button.id = 'fgm-delete-shape-btn';
@@ -944,27 +951,29 @@ export default function filamentGoogleMapsField({
       if (position) {
         const projection = this.map.getProjection();
         if (projection) {
-          // Si hay proyección, usarla (en la mayoría de casos no está disponible)
-          // Si no, posicionar el botón en la esquina superior derecha del mapa
+          const scale = Math.pow(2, this.map.getZoom());
+          const nw = new google.maps.LatLng(
+        this.map.getBounds().getNorthEast().lat(),
+        this.map.getBounds().getSouthWest().lng()
+          );
+          const worldCoordinateNW = this.map.getProjection().fromLatLngToPoint(nw);
+          const worldCoordinate = this.map.getProjection().fromLatLngToPoint(position);
+          const point = {
+        x: Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
+        y: Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
+          };
+          // Posicionar 2rem a la izquierda del centroide
+          button.style.left = (point.x - 32) + 'px'; // 2rem = 32px
+          button.style.top = point.y + 'px';
+        } else {
+          // fallback: esquina superior izquierda
+          button.style.left = '2rem';
+          button.style.top = '2rem'; 
         }
-        // Obtener la posición del botón en píxeles respecto al mapa
-        const scale = Math.pow(2, this.map.getZoom());
-        const nw = new google.maps.LatLng(
-          this.map.getBounds().getNorthEast().lat(),
-          this.map.getBounds().getSouthWest().lng()
-        );
-        const worldCoordinateNW = this.map.getProjection().fromLatLngToPoint(nw);
-        const worldCoordinate = this.map.getProjection().fromLatLngToPoint(position);
-        const point = {
-          x: Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
-          y: Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
-        };
-        button.style.left = point.x + 30 + 'px'; 
-        button.style.top = point.y - 30 + 'px';
       } else {
-        // fallback: esquina superior derecha
-        button.style.right = '20px';
-        button.style.top = '20px';
+        // fallback: esquina superior izquierda
+        button.style.left = '2rem';
+        button.style.top = '2rem';
       }
       button.onclick = () => {
         this.deleteSelectedShape();

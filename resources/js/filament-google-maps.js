@@ -763,6 +763,9 @@ export default function filamentGoogleMapsField({
           // Asignar fillColor como propiedad del feature para que toGeoJson lo incluya
           if (geoJSON.features[f].properties && geoJSON.features[f].properties.fillColor) {
             overlay.feature.setProperty("fillColor", geoJSON.features[f].properties.fillColor);
+            console.log('Asignando fillColor al feature:', geoJSON.features[f].properties.fillColor);
+          } else {
+            console.log('No se encontró fillColor en el feature', geoJSON.features[f]);
           }
           overlay.setMap(this.map);
           this.overlays.push(overlay);

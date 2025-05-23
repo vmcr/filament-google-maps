@@ -887,7 +887,7 @@ export default function filamentGoogleMapsField({
       this.clearSelection();
       this.selectedShape = shape;
       // shape.setEditable(true);
-      // selectColor(shape.get('fillColor') || shape.get('strokeColor'));
+      selectColor(shape.get('fillColor') || shape.get('strokeColor'));
       this.overlays.forEach(function (item) {
         if (shape && item.id == shape.id) {
           if (item.getEditable()) {

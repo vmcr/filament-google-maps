@@ -619,7 +619,7 @@ export default function filamentGoogleMapsField({
           instance = new google.maps.Polyline({
             id: feature.properties.id,
             type: feature.properties.type,
-            // strokeColor: feature.properties.color,
+            strokeColor: feature.properties.color,
             path: this.transformToMVCArray([
               feature.geometry.coordinates,
             ]).getAt(0),
@@ -760,7 +760,10 @@ export default function filamentGoogleMapsField({
           overlay.feature.getGeometry().forEachLatLng(function (latlng) {
             bounds.extend(latlng);
           });
-          // overlay.feature.setProperty("color", features[f].properties.color);
+          // Asignar fillColor como propiedad del feature para que toGeoJson lo incluya
+          if (geoJSON.features[f].properties && geoJSON.features[f].properties.fillColor) {
+            overlay.feature.setProperty("fillColor", geoJSON.features[f].properties.fillColor);
+          }
           overlay.setMap(this.map);
           this.overlays.push(overlay);
         }

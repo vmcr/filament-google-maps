@@ -598,7 +598,7 @@ export default function filamentGoogleMapsField({
             Object.assign({}, this.polyOptions, {
               id: feature.properties.id,
               type: feature.properties.type,
-              // fillColor: feature.properties.color,
+              fillColor: feature.properties.color,
               bounds: new google.maps.LatLngBounds(SW, NE),
               editable: false,
             })
@@ -609,7 +609,7 @@ export default function filamentGoogleMapsField({
             Object.assign({}, this.polyOptions, {
               id: feature.properties.id,
               type: feature.properties.type,
-              // fillColor: feature.properties.color,
+              fillColor: feature.properties.color,
               paths: this.transformToMVCArray(feature.geometry.coordinates),
               editable: false,
             })
@@ -632,7 +632,7 @@ export default function filamentGoogleMapsField({
             Object.assign({}, this.polyOptions, {
               id: feature.properties.id,
               type: feature.properties.type,
-              // fillColor: feature.properties.color,
+              fillColor: feature.properties.color,
               center: new google.maps.LatLng(
                 feature.geometry.coordinates[1],
                 feature.geometry.coordinates[0]
